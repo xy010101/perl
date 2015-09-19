@@ -8,13 +8,14 @@ my $q = Thread::Queue->new();
 
 sub produce { 
 	my $name = shift; 
-	while(1) { 
+	my $cnt = 5;
+	while($cnt--) { 
 		my $r = int(rand(100)); 
 		$q->enqueue($r, $r+10); 
 		# @_ = 1..4;
 		# $q->enqueue(\@_); 
 		printf("$name produce $r\n"); 
-		sleep(int(rand(30))); 
+		sleep(int(rand(3))); 
 	} 
 } 
 
@@ -33,6 +34,9 @@ my $producer1 = threads->create(\&produce, "producer1");
 my $producer2 = threads->create(\&produce, "producer2"); 
 my $consumer1 = threads->create(\&consume, "consumer2"); 
 
-$producer1->join(); 
-$producer2->join(); 
-$consumer1->join();
+while(1){
+if ($producer1->is_joinable()) { $producer1->join() ; print "1\n";}
+if ($producer2->is_joinable()) { $producer2->join() ; print "2\n";}
+if ($consumer1->is_joinable()) { $consumer1->join() ;  print "3\n";}
+sleep 1;
+}
